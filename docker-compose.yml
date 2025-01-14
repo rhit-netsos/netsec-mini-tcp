@@ -1,11 +1,11 @@
 # set the name for the project
-name: template
+name: tcpmini
 
 services:
-  hostA:
+  client:
     image: netsos/rhit-netsec:latest
-    container_name: hostA
-    hostname: hostA
+    container_name: client
+    hostname: client
     tty: true
     working_dir: /volumes/
     cap_add:
@@ -25,10 +25,10 @@ services:
       tail -f /dev/null
       "
 
-  hostB:
+  server:
     image: netsos/rhit-netsec:latest
-    container_name: hostB
-    hostname: hostB
+    container_name: server
+    hostname: server
     tty: true
     working_dir: /volumes/
     cap_add:
@@ -45,29 +45,7 @@ services:
       echo 'netsec ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers &&
       bash /volumes/check_config.sh &&
       cp /volumes/vimrc /home/netsec/.vimrc &&
-      tail -f /dev/null
-      "
-
-  attacker:
-    image: netsos/rhit-netsec:latest
-    container_name: attacker
-    hostname: attacker
-    working_dir: /volumes/
-    tty: true
-    cap_add:
-      - ALL
-    volumes:
-      - ./volumes:/volumes
-    networks:
-      local-net:
-        ipv4_address: 10.10.0.13
-    command: >
-      bash -c "
-      groupadd -g ${GID} netsec_group &&
-      useradd -m -u ${UID} -g netsec_group -s /bin/bash netsec &&
-      echo 'netsec ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers &&
-      bash /volumes/check_config.sh &&
-      cp /volumes/vimrc /home/netsec/.vimrc &&
+      sudo /volumes/setup_telnetd.sh &&
       tail -f /dev/null
       "
 

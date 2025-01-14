@@ -53,3 +53,5 @@ dkms.conf
 *.bin
 *.pcap
 *.cap
+connect_*.sh
+.env
